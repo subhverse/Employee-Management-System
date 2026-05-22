@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Employee Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-icon small">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span>EMS</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-section="employees">
+        <span>👥</span> Employees
+      </a>
+      <a href="#" class="nav-item" data-section="add">
+        <span>➕</span> Add Employee
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p class="admin-email" id="adminEmailDisplay"></p>
+      <button type="button" id="logoutBtn" class="btn btn-outline btn-block">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Mobile menu toggle -->
+  <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">☰</button>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <h1 id="pageTitle">Employee Dashboard</h1>
+      <div class="top-bar-actions">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <!-- Stats card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div>
+          <p class="stat-label">Total Employees</p>
+          <p class="stat-value" id="totalCount">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employees list section -->
+    <section id="employeesSection" class="content-section active">
+      <!-- Search and filter -->
+      <div class="search-bar card">
+        <div class="search-fields">
+          <input type="text" id="searchName" placeholder="Search by name...">
+          <input type="text" id="searchDepartment" placeholder="Filter by department...">
+          <input type="text" id="searchEmployeeId" placeholder="Search by Employee ID...">
+          <button type="button" id="searchBtn" class="btn btn-primary">Search</button>
+          <button type="button" id="clearSearchBtn" class="btn btn-secondary">Clear</button>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-responsive">
+          <table class="employee-table" id="employeeTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Salary</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody">
+              <tr><td colspan="7" class="empty-state">Loading employees...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add employee section -->
+    <section id="addSection" class="content-section">
+      <div class="card form-card">
+        <h2>Add New Employee</h2>
+        <form id="addEmployeeForm" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="addEmployeeId">Employee ID *</label>
+              <input type="text" id="addEmployeeId" required placeholder="EMP001">
+            </div>
+            <div class="form-group">
+              <label for="addFullName">Full Name *</label>
+              <input type="text" id="addFullName" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+              <label for="addEmail">Email *</label>
+              <input type="email" id="addEmail" required placeholder="john@company.com">
+            </div>
+            <div class="form-group">
+              <label for="addPhone">Phone *</label>
+              <input type="tel" id="addPhone" required placeholder="+1 234 567 8900">
+            </div>
+            <div class="form-group">
+              <label for="addDepartment">Department *</label>
+              <input type="text" id="addDepartment" required placeholder="Engineering">
+            </div>
+            <div class="form-group">
+              <label for="addJobPosition">Job Position *</label>
+              <input type="text" id="addJobPosition" required placeholder="Software Developer">
+            </div>
+            <div class="form-group">
+              <label for="addSalary">Salary *</label>
+              <input type="number" id="addSalary" required min="0" step="0.01" placeholder="50000">
+            </div>
+            <div class="form-group">
+              <label for="addJoiningDate">Joining Date *</label>
+              <input type="date" id="addJoiningDate" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Employee</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal" id="editModal" aria-hidden="true">
+    <div class="modal-overlay" id="editModalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Employee</h2>
+        <button type="button" class="modal-close" id="closeEditModal">&times;</button>
+      </div>
+      <form id="editEmployeeForm" novalidate>
+        <input type="hidden" id="editMongoId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editEmployeeId">Employee ID *</label>
+            <input type="text" id="editEmployeeId" required>
+          </div>
+          <div class="form-group">
+            <label for="editFullName">Full Name *</label>
+            <input type="text" id="editFullName" required>
+          </div>
+          <div class="form-group">
+            <label for="editEmail">Email *</label>
+            <input type="email" id="editEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="editPhone">Phone *</label>
+            <input type="tel" id="editPhone" required>
+          </div>
+          <div class="form-group">
+            <label for="editDepartment">Department *</label>
+            <input type="text" id="editDepartment" required>
+          </div>
+          <div class="form-group">
+            <label for="editJobPosition">Job Position *</label>
+            <input type="text" id="editJobPosition" required>
+          </div>
+          <div class="form-group">
+            <label for="editSalary">Salary *</label>
+            <input type="number" id="editSalary" required min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="editJoiningDate">Joining Date *</label>
+            <input type="date" id="editJoiningDate" required>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile View Modal -->
+  <div class="modal" id="profileModal" aria-hidden="true">
+    <div class="modal-overlay" id="profileModalOverlay"></div>
+    <div class="modal-content profile-modal">
+      <div class="modal-header">
+        <h2>Employee Profile</h2>
+        <button type="button" class="modal-close" id="closeProfileModal">&times;</button>
+      </div>
+      <div id="profileContent" class="profile-content"></div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation -->
+  <div class="modal" id="deleteModal" aria-hidden="true">
+    <div class="modal-overlay" id="deleteModalOverlay"></div>
+    <div class="modal-content modal-sm">
+      <h2>Delete Employee?</h2>
+      <p id="deleteConfirmText">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
